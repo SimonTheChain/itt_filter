@@ -15,6 +15,7 @@ from docx import Document
 from docx.enum.text import WD_COLOR_INDEX
 
 import itt_filter_ui as main_frame
+import itt_filter_about as about_dlg
 
 
 itt_path = ""
@@ -87,6 +88,13 @@ class FilterItt(QtCore.QThread):
         document.save("%s.docx" % os.path.basename(filtered))
 
 
+class AboutDlg(QtGui.QDialog, about_dlg.Ui_About):
+    def __init__(self, parent=None):
+        super(AboutDlg, self).__init__(parent)
+
+        self.setupUi(self)
+
+
 class IttFilterApp(QtGui.QMainWindow, main_frame.Ui_FilterWindow):
     def __init__(self, parent=None):
         super(IttFilterApp, self).__init__(parent)
@@ -99,6 +107,10 @@ class IttFilterApp(QtGui.QMainWindow, main_frame.Ui_FilterWindow):
         self.itt_btn.clicked.connect(self.itt_dlg)
         self.destination_btn.clicked.connect(self.destination_dlg)
         self.filter_btn.clicked.connect(self.filter)
+
+        # menu
+        self.actionAbout.triggered.connect(self.about_dlg)
+        self.actionQuit.triggered.connect(self.quit_fcn)
 
         self.show()
 
@@ -157,6 +169,14 @@ class IttFilterApp(QtGui.QMainWindow, main_frame.Ui_FilterWindow):
     def filter_done(self):
         self.results_lbl.setText("Filtering finished at %s." % time.strftime("%X"))
         self.filter_btn.setEnabled(True)
+
+    @staticmethod
+    def about_dlg():
+        about = AboutDlg()
+        about.exec_()
+
+    def quit_fcn(self):
+        self.close()
 
 
 def main():
