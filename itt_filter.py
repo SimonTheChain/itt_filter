@@ -41,20 +41,44 @@ class FilterItt(QtCore.QThread):
         with open(itt_path) as itt:
 
             for line in itt:
-                clean_line = line.lstrip()
+                clean_line = line.lstrip().decode("utf-8")
 
                 if clean_line.startswith("<p"):
 
                     if "italic" in clean_line:
-                        paragraph = document.add_paragraph(clean_line.decode("utf-8"))
+                        head, sep, tail = clean_line.partition("begin")
+                        final_line, sep, tail = (sep + tail).rpartition("</p>")
+                        paragraph = document.add_paragraph(
+                            final_line.replace(
+                                "<br/>", " ").replace(
+                                "&apos;", "'").replace(
+                                "span ", "").replace(
+                                "</span>", ""
+                            ))
                         paragraph.runs[0].font.highlight_color = WD_COLOR_INDEX.TURQUOISE
 
                     if '"' in clean_line.split(">")[1] and "italic" not in clean_line:
-                        paragraph = document.add_paragraph(clean_line.decode("utf-8"))
+                        head, sep, tail = clean_line.partition("begin")
+                        final_line, sep, tail = (sep + tail).rpartition("</p>")
+                        paragraph = document.add_paragraph(
+                            final_line.replace(
+                                "<br/>", " ").replace(
+                                "&apos;", "'").replace(
+                                "span ", "").replace(
+                                "</span>", ""
+                            ))
                         paragraph.runs[0].font.highlight_color = WD_COLOR_INDEX.YELLOW
 
                     if '<<' in clean_line.split(">")[1]:
-                        paragraph = document.add_paragraph(clean_line.decode("utf-8"))
+                        head, sep, tail = clean_line.partition("begin")
+                        final_line, sep, tail = (sep + tail).rpartition("</p>")
+                        paragraph = document.add_paragraph(
+                            final_line.replace(
+                                "<br/>", " ").replace(
+                                "&apos;", "'").replace(
+                                "span ", "").replace(
+                                "</span>", ""
+                            ))
                         paragraph.runs[0].font.highlight_color = WD_COLOR_INDEX.BRIGHT_GREEN
 
         filtered = os.path.splitext(itt_path)[0]
